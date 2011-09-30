@@ -11,6 +11,16 @@ module Shared =
             Seq.unfold (fun (a,b) -> Some( a+b, (b, a+b) ) ) (0,1)    
 
 
+    module Palindromes =
+       
+        let IsValid (s : string) =            
+            let length = s.Length
+            seq { for i in 0 .. length / 2 - 1 do yield i, length - i - 1 }
+            |> Seq.forall (fun (x, y) -> s.[x] = s.[y])    
+
+        let TestInt32 n =
+            IsValid( n.ToString() )
+
 
     module Primes =
 

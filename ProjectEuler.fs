@@ -19,12 +19,30 @@ module ProjectEuler =
 
     let Problem3 =
         let value = 600851475143L
-        let start = Math.Sqrt(float value) |> int
+        let max = Math.Sqrt(float value) |> int
         let folder = fun total n -> if value % n = 0L then List.append [n] total else total
-        Shared.Primes.Sieve start
+        Shared.Primes.Sieve max
         |> Seq.map (fun n -> int64 n)
         |> Seq.fold folder [ ] 
         |> Seq.max
+
+    let Problem4 =        
+        let x = List.rev [ 100 .. 999 ]
+        let test = Shared.Palindromes.TestInt32        
+        let search = fun n s -> List.choose (fun i -> if test(n * i) then Some(n * i) else None) s
+        List.collect (fun i -> search i x) x
+        |> List.sort
+        |> List.rev
+        |> List.head        
+
+    /// 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
+    /// What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
+    let Problem5 = 
+        let x = seq { 3 .. 10 }
+                
+        let factors = Seq.collect (fun i -> Shared.Primes.Sieve i) x
+        let g = Seq.toList factors
+        0
                 
 
     let Problem13 = 
