@@ -43,6 +43,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Shared.fs" />
     <Compile Include="ProjectEuler.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

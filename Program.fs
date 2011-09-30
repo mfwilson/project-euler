@@ -5,7 +5,7 @@ open System
 open ProjectEulerConsole
 
 
-let result = ProjectEuler.Problem1
+let result = ProjectEuler.Problem2
 printfn "%d" result
 
-Console.ReadLine |> ignore
+Console.ReadLine() |> ignore
