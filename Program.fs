@@ -8,7 +8,7 @@ open ProjectEulerConsole
 //printfn "1221 %b" (Shared.Palindromes.IsValid "1221")
 
 
-let result = ProjectEuler.Problem10
+let result = ProjectEuler.Problem9
 printfn "%d" result
 
 Console.ReadLine() |> ignore
