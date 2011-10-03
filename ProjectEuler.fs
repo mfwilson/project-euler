@@ -44,6 +44,14 @@ module ProjectEuler =
         let g = Seq.toList factors
         0
                 
+    /// Find the 10001st prime.
+    let Problem7 =
+        Shared.Primes.Sieve 1000000 |> Seq.nth 10000
+
+
+    /// Find the sum of all the primes below two million.
+    let Problem10 =
+        Shared.Primes.Sieve 2000000 |> Seq.map (fun n -> uint64 n) |> Seq.sum
 
     let Problem13 = 
         let result = [ 37107287533902102798797998220837590246510135740250I;
