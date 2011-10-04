@@ -45,7 +45,9 @@ module ProjectEuler =
 
     /// Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
     let Problem6 =
-        0
+        let sumOfSquares = Seq.initInfinite (fun n -> (n + 1) * (n + 1)) |> Seq.take 100 |> Seq.sum
+        let sum = Seq.initInfinite (fun n -> (n + 1)) |> Seq.take 100 |> Seq.sum
+        (sum * sum) - sumOfSquares
                 
     /// Find the 10001st prime.
     let Problem7 =
@@ -83,9 +85,7 @@ module ProjectEuler =
 
     /// There exists exactly one Pythagorean triplet for which a + b + c = 1000. Find the product abc.
     let Problem9 =
-        let integers = Seq.initInfinite (fun n -> n + 1) 
-                       |> Seq.takeWhile (fun n -> n < 2500) 
-                       |> Seq.toList
+        let integers = Seq.initInfinite (fun n -> n + 1) |> Seq.take 1000 |> Seq.toList
         let test = 
             fun a b -> 
                 if a > b then
