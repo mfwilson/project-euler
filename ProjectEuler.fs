@@ -43,6 +43,7 @@ module ProjectEuler =
         let g = Seq.toList factors
         0
 
+    /// Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
     let Problem6 =
         0
                 
@@ -82,22 +83,22 @@ module ProjectEuler =
 
     /// There exists exactly one Pythagorean triplet for which a + b + c = 1000. Find the product abc.
     let Problem9 =
-        
-        let squares = Seq.initInfinite (fun n -> (n + 1) * (n + 1)) 
-                      |> Seq.takeWhile (fun n -> n < 1000) 
-                      |> Seq.toList
-        
+        let integers = Seq.initInfinite (fun n -> n + 1) 
+                       |> Seq.takeWhile (fun n -> n < 2500) 
+                       |> Seq.toList
         let test = 
-            fun x y -> 
-                let sum = x + y
-                let root = Math.Sqrt(float sum)
-                if x < y && root = Math.Floor(root) then true else false                
-
-        let search = fun n s -> List.choose (fun i -> if test n i then Some(n, i) else None) s
-        let o = List.collect (fun i -> search i squares) squares
+            fun a b -> 
+                if a > b then
+                    false
+                else
+                    let sum = (a * a) + (b * b)
+                    let c = Math.Sqrt(float sum)
+                    if c = Math.Round(c, 0) && a + b + int c = 1000 then true else false
+                    //Console.WriteLine("a:{0} b:{1} c:{2}", a, b, c)
+        let search = fun n s -> List.choose (fun i -> if test n i then Some(n, i, 1000 - n - i) else None) s
+        let a, b, c = List.collect (fun i -> search i integers) integers |> List.head
+        a * b * c
         
-        0
-
     /// Find the sum of all the primes below two million.
     let Problem10 =
         Shared.Primes.Sieve 2000000 |> Seq.map (fun n -> uint64 n) |> Seq.sum
