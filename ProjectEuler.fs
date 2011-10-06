@@ -38,10 +38,18 @@ module ProjectEuler =
     /// 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
     /// What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
     let Problem5 = 
-        let x = seq { 3 .. 10 }                
-        let factors = Seq.collect (fun i -> Shared.Primes.Sieve i) x
-        let g = Seq.toList factors
-        0
+        let folder = 
+            fun total n -> 
+                if total % n = 0L then
+                    total
+                else
+                    let n' = int64 n               
+                    let factors = Shared.Primes.Factors n' |> Seq.toList 
+                    let res = factors |> Seq.fold (fun p i -> if total % i <> 0L || p % i <> 0L then p * i else p) 1L
+                    total * res                
+
+        [ 1L .. 20L ] |> List.fold folder 1L
+        
 
     /// Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
     let Problem6 =

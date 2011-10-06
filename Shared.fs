@@ -31,6 +31,9 @@ module Shared =
                 else testDivisors (d + 1L)
             testDivisors 2L
 
+        let Factors n =
+            seq { 2L .. n } |> Seq.choose (fun i -> if n % i = 0L && IsPrime i then Some(i) else None)
+
         let DivideWork f t nd =
             let range = (t + 1L) - f
             if range < nd then failwith "Range is less than the number of divisions"
