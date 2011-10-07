@@ -113,26 +113,12 @@ module ProjectEuler =
 
     /// What is the value of the first triangle number to have over five hundred divisors?
     let Problem12 =
-
-        //let f = Shared.Numbers.Triangles() |> Seq.take 10 //|> Seq.toList
-
-        //let g = f |> Seq.toList
-
-        //g |> Seq.iter (fun n -> let g = Shared.Numbers.Factors n |> Seq.map (fun i -> i.ToString())
-        //                        let r = String.Join(", ", g)
-        //                        Console.WriteLine("{0}: {1}", n, r))
-        
         let picker = 
-            fun n -> 
-                let length = Shared.Numbers.Factors n |> Seq.length
+            fun n ->         
+                let length = Shared.Numbers.DivisorsCount n
                 if length > 500 then Some(n) else None
-
-        //let g = Shared.Numbers.Triangles() |> Seq.tryPick picker
-        
-        let r = Shared.Process.Parallel 100 (Shared.Numbers.Triangles) (picker)
-
-        //Async.!!!
-        0
+        let result = Shared.Numbers.Triangles() |> Seq.tryPick picker
+        result.Value        
 
     let Problem13 = 
         let result = [ 37107287533902102798797998220837590246510135740250I;

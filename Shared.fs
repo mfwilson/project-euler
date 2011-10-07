@@ -8,10 +8,27 @@ module Shared =
     module Numbers =
         
         let Triangles() =                         
-            Seq.unfold (fun (n, sum) -> Some(n + sum, (n + 1, n + sum))) (1, 0)
+            Seq.unfold (fun (n, sum) -> Some(n + sum, (n + 1, n + sum))) (1, 0)            
+
+        let DivisorsCount n = 
+            if n = 1 then 
+                1    
+            else
+                let root = int (Math.Sqrt(float n))
+                let counter = 
+                    fun count i ->
+                        match n % i = 0, i = root with
+                        | true, true -> count + 1
+                        | true, false -> count + 2
+                        | _ -> count                        
+                seq { 1 .. root } |> Seq.fold counter 0
             
         let Factors n = 
-            seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
+            if n = 1 then 
+                Seq.singleton 1
+            else
+                let factors = seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
+                Seq.append factors [ n ]            
 
     module Process =
 
