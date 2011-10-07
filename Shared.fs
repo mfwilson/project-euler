@@ -5,10 +5,46 @@ open System.Collections
 
 module Shared =
 
+    module Numbers =
+        
+        let Triangles() =                         
+            Seq.unfold (fun (n, sum) -> Some(n + sum, (n + 1, n + sum))) (1, 0)
+            
+        let Factors n = 
+            seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
+
+    module Process =
+
+        let Parallel size (source : unit -> seq<int>) (test : int -> int option) =
+
+            let processors = System.Environment.ProcessorCount 
+
+            let processTask items =
+                async { return items |> Array.tryPick test }
+
+            
+            let rec doWork(batch) =
+                let results = 
+                    Async.Parallel [ for task in 0 .. processors -> 
+                                         let workSet = source() 
+                                                       |> Seq.skip (task * size * batch) 
+                                                       |> Seq.take size 
+                                                       |> Seq.toArray
+                                         processTask workSet ]
+                    |> Async.RunSynchronously
+                    |> Array.choose (fun n -> n)
+                Console.WriteLine("Completed batch {0}", batch)
+                if Array.length results > 0 then results else doWork(batch + 1)
+            
+            let result = doWork(1)
+
+            0
+
+            
     module Fibonacci =
 
         let Generate =
-            Seq.unfold (fun (a,b) -> Some( a+b, (b, a+b) ) ) (0,1)    
+            Seq.unfold (fun (a,b) -> Some( a + b, (b, a + b) ) ) (0,1)    
 
 
     module Palindromes =
