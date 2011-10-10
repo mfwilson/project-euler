@@ -3,3 +3,4 @@ _ReSharper.*
 *.suo
 bin/
 obj/
+ProjectEulerConsole.5.1.ReSharper.user
