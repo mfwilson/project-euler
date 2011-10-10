@@ -3,7 +3,7 @@ open System
 
 open ProjectEulerConsole
 
-let result = ProjectEuler.Problem12
+let result = ProjectEuler.Problem20
 printfn "%d" result
 
 Console.ReadLine() |> ignore

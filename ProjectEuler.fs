@@ -223,5 +223,11 @@ module ProjectEuler =
                        53503534226472524250874054075591789781264330331690I; ] |> List.sum
         result.ToString().Substring(0, 10)
 
-
-        
+    /// Find the sum of the digits in the number 100!
+    let Problem20 =
+        let result = Shared.Numbers.Factorial 100
+        result.ToString().ToCharArray() 
+        |> Array.toSeq 
+        |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
+        |> Seq.toList
+        |> Seq.sum

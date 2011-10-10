@@ -30,6 +30,9 @@ module Shared =
                 let factors = seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
                 Seq.append factors [ n ]            
 
+        let Factorial n = 
+            [ 2 .. n ] |> List.fold (fun total i -> bigint i * total) 1I
+
     module Process =
 
         let Parallel size (source : unit -> seq<int>) (test : int -> int option) =
@@ -62,7 +65,6 @@ module Shared =
 
         let Generate =
             Seq.unfold (fun (a,b) -> Some( a + b, (b, a + b) ) ) (0,1)    
-
 
     module Palindromes =
        
