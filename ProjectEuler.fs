@@ -4,20 +4,20 @@ open System
 
 module ProjectEuler =
 
-    let Problem1 =
+    let Problem1() =
         Seq.init 1000 (fun n -> n)
         |> Seq.filter (fun n -> n % 3 = 0 || n % 5 = 0)
         |> Seq.sum
     
-    let Problem1_1 =
+    let Problem1_1() =
         Seq.fold (fun total n -> if n % 3 = 0 || n % 5 = 0 then total + n else total) 0 (seq { 1 .. 999 })
 
-    let Problem2 =
+    let Problem2() =
         Shared.Fibonacci.Generate
         |> Seq.takeWhile (fun n -> n < 4000000)
         |> Seq.fold (fun total n -> if n % 2 = 0 then total + n else total) 0 
 
-    let Problem3 =
+    let Problem3() =
         let value = 600851475143L
         let max = Math.Sqrt(float value) |> int
         let folder = fun total n -> if value % n = 0L then List.append [n] total else total
@@ -26,7 +26,7 @@ module ProjectEuler =
         |> Seq.fold folder [ ] 
         |> Seq.max
 
-    let Problem4 =        
+    let Problem4() =        
         let x = List.rev [ 100 .. 999 ]
         let test = Shared.Palindromes.TestInt32        
         let search = fun n s -> List.choose (fun i -> if test(n * i) then Some(n * i) else None) s
@@ -37,7 +37,7 @@ module ProjectEuler =
 
     /// 2520 is the smallest number that can be divided by each of the numbers from 1 to 10 without any remainder.
     /// What is the smallest positive number that is evenly divisible by all of the numbers from 1 to 20?
-    let Problem5 = 
+    let Problem5() = 
         let folder = 
             fun total n -> 
                 if total % n = 0L then
@@ -52,17 +52,17 @@ module ProjectEuler =
         
 
     /// Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
-    let Problem6 =
+    let Problem6() =
         let sumOfSquares = Seq.initInfinite (fun n -> (n + 1) * (n + 1)) |> Seq.take 100 |> Seq.sum
         let sum = Seq.initInfinite (fun n -> (n + 1)) |> Seq.take 100 |> Seq.sum
         (sum * sum) - sumOfSquares
                 
     /// Find the 10001st prime.
-    let Problem7 =
+    let Problem7() =
         Shared.Primes.Sieve 1000000 |> Seq.nth 10000
 
     /// Find the greatest product of five consecutive digits in the 1000-digit number.
-    let Problem8 =
+    let Problem8() =
         let value = "73167176531330624919225119674426574742355349194934" +
                     "96983520312774506326239578318016984801869478851843" +
                     "85861560789112949495459501737958331952853208805511" +
@@ -92,7 +92,7 @@ module ProjectEuler =
         |> Seq.max
 
     /// There exists exactly one Pythagorean triplet for which a + b + c = 1000. Find the product abc.
-    let Problem9 =
+    let Problem9() =
         let integers = Seq.initInfinite (fun n -> n + 1) |> Seq.take 1000 |> Seq.toList
         let test = 
             fun a b -> 
@@ -108,11 +108,11 @@ module ProjectEuler =
         a * b * c
         
     /// Find the sum of all the primes below two million.
-    let Problem10 =
+    let Problem10() =
         Shared.Primes.Sieve 2000000 |> Seq.map (fun n -> uint64 n) |> Seq.sum
 
     /// What is the value of the first triangle number to have over five hundred divisors?
-    let Problem12 =
+    let Problem12() =
         let picker = 
             fun n ->         
                 let length = Shared.Numbers.DivisorsCount n
@@ -120,7 +120,7 @@ module ProjectEuler =
         let result = Shared.Numbers.Triangles() |> Seq.tryPick picker
         result.Value        
 
-    let Problem13 = 
+    let Problem13() = 
         let result = [ 37107287533902102798797998220837590246510135740250I;
                        46376937677490009712648124896970078050417018260538I;
                        74324986199524741059474233309513058123726617309629I;
@@ -223,11 +223,19 @@ module ProjectEuler =
                        53503534226472524250874054075591789781264330331690I; ] |> List.sum
         result.ToString().Substring(0, 10)
 
+    /// What is the sum of the digits of the number 2^1000?
+    let Problem16() =        
+        let n = Shared.Numbers.Power 2 1000        
+        Shared.Numbers.SumDigits n               
+
     /// Find the sum of the digits in the number 100!
-    let Problem20 =
+    let Problem20() =
         let result = Shared.Numbers.Factorial 100
-        result.ToString().ToCharArray() 
-        |> Array.toSeq 
-        |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
-        |> Seq.toList
-        |> Seq.sum
+        Shared.Numbers.SumDigits result
+
+    /// Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
+    let Problem48() =        
+        let result = seq { 1 .. 1000 } |> Seq.map (fun i -> Shared.Numbers.Power i i) |> Seq.sum
+        let s = result.ToString()
+        s.Substring(s.Length - 10, 10)
+        

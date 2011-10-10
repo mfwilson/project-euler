@@ -30,8 +30,18 @@ module Shared =
                 let factors = seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
                 Seq.append factors [ n ]            
 
+        let Power x y =
+            Seq.init y (fun i -> int x) |> Seq.fold (fun total i -> total * bigint i) 1I
+
         let Factorial n = 
             [ 2 .. n ] |> List.fold (fun total i -> bigint i * total) 1I
+
+        let SumDigits n = 
+            n.ToString().ToCharArray() 
+            |> Array.toSeq 
+            |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
+            |> Seq.toList
+            |> Seq.sum
 
     module Process =
 
