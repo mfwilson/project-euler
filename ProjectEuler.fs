@@ -136,12 +136,8 @@ module ProjectEuler =
                         [ 01; 70; 54; 71; 83; 51; 54; 69; 16; 92; 33; 48; 61; 43; 52; 01; 89; 19; 67; 48  ];
                     ]
         
-        let r = Shared.Matrix.getValues values Shared.Direction.SouthEast 0 0 4
-
-        // x, y, direction
-
-
-        0
+        let directions = [| Shared.Direction.East; Shared.Direction.SouthEast; Shared.Direction.South; Shared.Direction.SouthWest; |]
+        Shared.Matrix.search values directions 4
 
     /// What is the value of the first triangle number to have over five hundred divisors?
     let Problem12() =

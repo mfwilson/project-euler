@@ -82,7 +82,6 @@ module Shared =
             let result = doWork(1)
 
             0
-
             
     module Fibonacci =
 
@@ -159,36 +158,52 @@ module Shared =
 
         let getTransformation (direction : Direction) =
             match direction with
-            | Direction.North     -> Some(fun x y -> x, y - 1)
-            | Direction.NorthEast -> Some(fun x y -> x + 1, y - 1)
-            | Direction.East      -> Some(fun x y -> x + 1, y)
-            | Direction.SouthEast -> Some(fun x y -> x + 1, y + 1)
-            | Direction.South     -> Some(fun x y -> x, y + 1)
-            | Direction.SouthWest -> Some(fun x y -> x - 1, y + 1)
-            | Direction.West      -> Some(fun x y -> x - 1, y)
-            | Direction.NorthWest -> Some(fun x y -> x - 1, y - 1)
-            | _ -> None
+            | Direction.North     -> fun x y -> x - 1, y
+            | Direction.NorthEast -> fun x y -> x - 1, y + 1
+            | Direction.East      -> fun x y -> x, y + 1
+            | Direction.SouthEast -> fun x y -> x + 1, y + 1
+            | Direction.South     -> fun x y -> x + 1, y
+            | Direction.SouthWest -> fun x y -> x + 1, y - 1
+            | Direction.West      -> fun x y -> x, y - 1
+            | Direction.NorthWest -> fun x y -> x - 1, y - 1        
 
-        let getValues (values : int[,]) (direction : Direction) x y count = 
-            
+        let getValues (values : int[,]) (direction : Direction) x y count =
             let xDim = Array2D.length1 values
             let yDim = Array2D.length1 values
+            let transform = getTransformation direction
 
-            if y + count > yDim || x + count > xDim then 
-                None
-            else
-                let transform = (getTransformation direction).Value
+            let next a b c = 
+                let xpoint, ypoint = transform a b
+                if xpoint >= xDim || xpoint < 0 || ypoint < 0 || ypoint >= yDim then 
+                    None
+                else
+                    Some(values.[xpoint, ypoint], (xpoint, ypoint, c + 1))
 
-                let expander (x', y', c) =
-                    match c with
-                    | 1 -> Some(values.[x', y'], (x', y', c + 1))
-                    | count -> None
-       //             | _ -> Some(transform x' y', c + 1)
+            let expander (x', y', c) =
+                match c with
+                | 1 -> Some(values.[x', y'], (x', y', c + 1))
+                | v when v <= count -> next x' y' c
+                | _ -> None
 
-//                let f = Seq.unfold (fun (a, b, d) -> if (d < endDate) then Some(d, d.AddDays(1.0)) else None) (x, y, 1)
-                let f = Seq.unfold (expander) (x, y, 1)
-                
+            let sequence = Seq.unfold (expander) (x, y, 1)
+            if Seq.length sequence = count then Some(sequence) else None
+            
+        let search (values : int[,]) (directions : Direction seq) count =
+            let xDim = Array2D.length1 values
+            let yDim = Array2D.length1 values
+        
+            let points = Seq.init (xDim * yDim) (fun i -> i / xDim, i % yDim) 
+                         |> Seq.map (fun p -> directions |> Seq.map (fun d -> d, p) ) 
+                         |> Seq.concat
+                         |> Seq.toArray
 
-                Some(0)
+            let sequences = points 
+                            |> Array.choose (fun (d, p) -> getValues values d (fst(p)) (snd(p)) count) 
+                            |> Array.map (fun x -> Seq.toList x)
+                            |> Array.map (fun x -> Seq.reduce (*) x)
+                            
+            sequences |> Array.max
+            
+
                 
 
