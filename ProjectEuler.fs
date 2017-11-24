@@ -136,6 +136,11 @@ module ProjectEuler =
                         [ 01; 70; 54; 71; 83; 51; 54; 69; 16; 92; 33; 48; 61; 43; 52; 01; 89; 19; 67; 48  ];
                     ]
         
+        let r = Shared.Matrix.getValues values Shared.Direction.SouthEast 0 0 4
+
+        // x, y, direction
+
+
         0
 
     /// What is the value of the first triangle number to have over five hundred divisors?
@@ -264,19 +269,13 @@ module ProjectEuler =
     ///    Which has twenty-eight, rain or shine.
     ///    And on leap years, twenty-nine.
     /// A leap year occurs on any year evenly divisible by 4, but not on a century unless it is divisible by 400.
-    /// How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?
+    /// How many Sundays fell on the first of the month during the twentieth century (1 Jan 1901 to 31 Dec 2000)?       
     let Problem19() =
         let startDate = DateTime(1901, 1, 1)
         let endDate = DateTime(2000, 12, 31)
         let isSundayTheFirst(date : DateTime) = date.DayOfWeek = DayOfWeek.Sunday && date.Day = 1
-        
-        let mutable currentDate = startDate
-        let mutable count = 0
-        while currentDate < endDate do  
-            if isSundayTheFirst currentDate then count <- count + 1
-            currentDate <- currentDate.AddDays(1.0)
-        count        
-
+        Shared.Dates.generateRange startDate endDate |> Seq.where isSundayTheFirst |> Seq.length
+              
     /// Find the sum of the digits in the number 100!
     let Problem20() =
         let result = Shared.Numbers.Factorial 100

@@ -3,7 +3,20 @@
 open System
 open System.Collections
 
+open Microsoft.FSharp.Collections
+
 module Shared =
+    open System.Globalization
+
+    type Direction = 
+        | North
+        | NorthEast
+        | East
+        | SouthEast
+        | South
+        | SouthWest
+        | West
+        | NorthWest
 
     module Numbers =
         
@@ -137,5 +150,45 @@ module Shared =
                         array.Set(pm, false)
             seq { for i in 2 .. max - 1 do if array.Get(i) then yield i }
             
+    module Dates =
+        
+        let generateRange (startDate : DateTime) (endDate : DateTime) =
+            Seq.unfold (fun d -> if (d < endDate) then Some(d, d.AddDays(1.0)) else None) startDate
+      
+    module Matrix =
 
+        let getTransformation (direction : Direction) =
+            match direction with
+            | Direction.North     -> Some(fun x y -> x, y - 1)
+            | Direction.NorthEast -> Some(fun x y -> x + 1, y - 1)
+            | Direction.East      -> Some(fun x y -> x + 1, y)
+            | Direction.SouthEast -> Some(fun x y -> x + 1, y + 1)
+            | Direction.South     -> Some(fun x y -> x, y + 1)
+            | Direction.SouthWest -> Some(fun x y -> x - 1, y + 1)
+            | Direction.West      -> Some(fun x y -> x - 1, y)
+            | Direction.NorthWest -> Some(fun x y -> x - 1, y - 1)
+            | _ -> None
+
+        let getValues (values : int[,]) (direction : Direction) x y count = 
+            
+            let xDim = Array2D.length1 values
+            let yDim = Array2D.length1 values
+
+            if y + count > yDim || x + count > xDim then 
+                None
+            else
+                let transform = (getTransformation direction).Value
+
+                let expander (x', y', c) =
+                    match c with
+                    | 1 -> Some(values.[x', y'], (x', y', c + 1))
+                    | count -> None
+       //             | _ -> Some(transform x' y', c + 1)
+
+//                let f = Seq.unfold (fun (a, b, d) -> if (d < endDate) then Some(d, d.AddDays(1.0)) else None) (x, y, 1)
+                let f = Seq.unfold (expander) (x, y, 1)
+                
+
+                Some(0)
+                
 
