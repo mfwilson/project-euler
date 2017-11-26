@@ -2,6 +2,7 @@
 
 open System
 open System.Collections
+open System.Text
 
 open Microsoft.FSharp.Collections
 
@@ -36,12 +37,15 @@ module Shared =
                         | _ -> count                        
                 seq { 1 .. root } |> Seq.fold counter 0
             
-        let Factors n = 
+        let ProperDivisors n =
             if n = 1 then 
                 Seq.singleton 1
             else
-                let factors = seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
-                Seq.append factors [ n ]            
+                seq { 1 .. n / 2 } |> Seq.choose (fun i -> if n % i = 0 then Some(i) else None)
+
+        let Factors n = 
+            let divisors = ProperDivisors n
+            if n = 1 then divisors else Seq.append divisors [ n ]            
 
         let Power x y =
             Seq.init y (fun i -> int x) |> Seq.fold (fun total i -> total * bigint i) 1I
@@ -55,6 +59,70 @@ module Shared =
             |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
             |> Seq.toList
             |> Seq.sum
+
+        let IsAmicable n =
+            let first = ProperDivisors n
+            let second = first |> Seq.sum
+            let value = ProperDivisors second |> Seq.sum
+            n = value && n <> second
+
+        let ToEnglish (n : int) =
+            let smallNumbers = [| "Zero"; "One"; "Two"; "Three"; "Four"; "Five"; "Six"; "Seven"; "Eight"; "Nine"; "Ten"; "Eleven"; "Twelve"; "Thirteen"; "Fourteen"; "Fifteen"; "Sixteen"; "Seventeen"; "Eighteen"; "Nineteen" |]
+            let tensNumbers = [| ""; ""; "Twenty"; "Thirty"; "Forty"; "Fifty"; "Sixty"; "Seventy"; "Eighty"; "Ninety" |]                        
+            let scaleNumbers = [| ""; "Thousand"; "Million"; "Billion" |]
+
+            let threeDigitGroupToWords threeDigits =
+                let groupText = new StringBuilder()
+
+                // Determine the hundreds and the remainder
+                let hundreds = threeDigits / 100
+                let tensUnits = threeDigits % 100
+                let tens = tensUnits / 10
+                let units = tensUnits % 10
+
+                // Hundreds rules
+                if hundreds <> 0 then
+                    groupText.Append( smallNumbers.[hundreds] + " Hundred" ) |> ignore
+                    if tensUnits <> 0 then groupText.Append(" and ") |> ignore
+
+                // Tens rules
+                if tens >= 2 then
+                    groupText.Append(tensNumbers.[tens]) |> ignore
+                    if units <> 0 then groupText.Append(" " + smallNumbers.[units]) |> ignore
+                else if tensUnits <> 0 then
+                    groupText.Append(smallNumbers.[tensUnits]) |> ignore
+                groupText.ToString()
+
+            // Ensure a positive number to extract from
+            let mutable positive = n
+
+            // Extract the three-digit groups
+            let digitGroups = [| for i = 0 to 3 do yield positive % 1000; positive <- positive / 1000 |]
+
+            // Convert each three-digit group to words
+            let groupText = [| for i = 0 to 3 do yield threeDigitGroupToWords digitGroups.[i] |]
+
+            // Recombine the three-digit groups
+            let combined = new StringBuilder(groupText.[0])
+            
+            // Determine whether an 'and' is needed
+            let mutable appendAnd = (digitGroups.[0] > 0) && (digitGroups.[0] < 100)
+            
+            // Process the remaining groups in turn, smallest to largest
+            for i = 1 to 3 do            
+                // Only add non-zero items
+                if digitGroups.[i] <> 0 then
+                    // Build the string to add as a prefix
+                    let prefix = new StringBuilder(groupText.[i] + " " + scaleNumbers.[i])
+                    if combined.Length <> 0 then prefix.Append(if appendAnd then " and " else ", ") |> ignore
+
+                    // Opportunity to add 'and' is ended
+                    appendAnd <- false;
+
+                    // Add the three-digit group to the combined string
+                    combined.Insert(0, prefix) |> ignore
+            combined.ToString()
+
 
     module Process =
 
@@ -97,7 +165,6 @@ module Shared =
 
         let TestInt32 n =
             IsValid( n.ToString() )
-
 
     module Primes =
 
@@ -204,6 +271,5 @@ module Shared =
                             
             sequences |> Array.max
             
-
                 
 

@@ -256,6 +256,18 @@ module ProjectEuler =
         let n = Shared.Numbers.Power 2 1000        
         Shared.Numbers.SumDigits n               
 
+    /// If the numbers 1 to 5 are written out in words: one, two, three, four, five, then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
+    ///
+    /// If all the numbers from 1 to 1000 (one thousand) inclusive were written out in words, how many letters would be used?
+    /// NOTE: Do not count spaces or hyphens. For example, 342 (three hundred and forty-two) contains 23 letters and 115 (one hundred and fifteen) 
+    /// contains 20 letters. The use of "and" when writing out numbers is in compliance with British usage.
+    let Problem17() =        
+        let result = seq { 1 .. 1000 }
+                     |> Seq.map (fun n -> Shared.Numbers.ToEnglish n)
+                     |> Seq.map (fun s -> s.Replace(" ", "").Length)
+                     |> Seq.sum       
+        result
+
     /// You are given the following information, but you may prefer to do some research for yourself.
     ///    1 Jan 1900 was a Monday.
     ///    Thirty days has September,
@@ -276,6 +288,20 @@ module ProjectEuler =
     let Problem20() =
         let result = Shared.Numbers.Factorial 100
         Shared.Numbers.SumDigits result
+
+    /// Let d(n) be defined as the sum of proper divisors of n (numbers less than n which divide evenly into n).
+    /// If d(a) = b and d(b) = a, where a ≠ b, then a and b are an amicable pair and each of a and b are called amicable numbers.
+    /// For example, the proper divisors of 220 are 1, 2, 4, 5, 10, 11, 20, 22, 44, 55 and 110; therefore d(220) = 284. The proper divisors of 284 are 1, 2, 4, 71 and 142; so d(284) = 220.
+    /// Evaluate the sum of all the amicable numbers under 10000.
+    let Problem21() =
+
+        let result = seq { 1 .. 10000 } |> Seq.where (fun n -> Shared.Numbers.IsAmicable n) |> Seq.toArray
+
+        result |> Array.sum
+        //let values = result |> Seq.toArray
+        
+        //result |> Seq.sum
+        
 
     /// Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
     let Problem48() =        
