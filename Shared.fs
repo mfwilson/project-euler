@@ -66,6 +66,8 @@ module Shared =
             let value = ProperDivisors second |> Seq.sum
             n = value && n <> second
 
+        let IsAbundant n = ProperDivisors n |> Seq.sum > n
+
         let ToEnglish (n : int) =
             let smallNumbers = [| "Zero"; "One"; "Two"; "Three"; "Four"; "Five"; "Six"; "Seven"; "Eight"; "Nine"; "Ten"; "Eleven"; "Twelve"; "Thirteen"; "Fourteen"; "Fifteen"; "Sixteen"; "Seventeen"; "Eighteen"; "Nineteen" |]
             let tensNumbers = [| ""; ""; "Twenty"; "Thirty"; "Forty"; "Fifty"; "Sixty"; "Seventy"; "Eighty"; "Ninety" |]                        
