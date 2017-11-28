@@ -171,6 +171,9 @@ module Shared =
         let TestInt32 n =
             IsValid( n.ToString() )
 
+        let TestBase2 (n : int) =
+            IsValid(Convert.ToString(n, 2))
+
     module Primes =
 
         let IsPrime n =

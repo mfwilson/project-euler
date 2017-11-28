@@ -378,6 +378,14 @@ module ProjectEuler =
                      |> Array.distinct
         values.Length
         
+    /// The decimal number, 585 = 10010010012 (binary), is palindromic in both bases.
+    /// Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
+    /// (Please note that the palindromic number, in either base, may not include leading zeros.)
+    let Problem33() =
+        let palindromes = seq { 1 .. 1000000 } 
+                          |> Seq.where (fun n -> Shared.Palindromes.TestInt32 n && Shared.Palindromes.TestBase2 n)
+                          |> Seq.toArray
+        palindromes |> Array.sum       
 
     /// Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
     let Problem48() =        
