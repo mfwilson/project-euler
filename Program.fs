@@ -3,7 +3,7 @@ open System
 
 open ProjectEulerConsole
 
-let result = ProjectEuler.Problem23()
+let result = ProjectEuler.Problem25()
 printfn "%d" result
 //printfn "%d" result
 

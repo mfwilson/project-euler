@@ -158,6 +158,9 @@ module Shared =
         let Generate =
             Seq.unfold (fun (a,b) -> Some( a + b, (b, a + b) ) ) (0,1)    
 
+        let GenerateBig =
+            Seq.unfold (fun (a,b) -> Some( a + b, (b, a + b) ) ) (0I,1I)    
+
     module Palindromes =
        
         let IsValid (s : string) =            
