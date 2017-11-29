@@ -20,6 +20,7 @@ module Shared =
         | NorthWest
 
     module Numbers =
+        open System.Numerics
         
         let Triangles() =                         
             Seq.unfold (fun (n, sum) -> Some(n + sum, (n + 1, n + sum))) (1, 0)            
@@ -59,6 +60,12 @@ module Shared =
             |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
             |> Seq.toList
             |> Seq.sum
+
+        let AddDigits n (convert : int -> BigInteger) = 
+            n.ToString().ToCharArray() 
+            |> Array.map ( fun c -> Int32.Parse(c.ToString()) )
+            |> Array.map convert
+            |> Array.sum
 
         let IsAmicable n =
             let first = ProperDivisors n

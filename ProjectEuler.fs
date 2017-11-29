@@ -378,10 +378,21 @@ module ProjectEuler =
                      |> Array.distinct
         values.Length
         
-    /// The decimal number, 585 = 10010010012 (binary), is palindromic in both bases.
+    /// 145 is a curious number, as 1! + 4! + 5! = 1 + 24 + 120 = 145. 
+    /// Find the sum of all numbers which are equal to the sum of the factorial of their digits.
+    /// Note: as 1! = 1 and 2! = 2 are not sums they are not included.
+    let Problem34() =
+        let factorials = seq { 0 .. 9 } |> Seq.map (fun n -> Shared.Numbers.Factorial n) |> Seq.toArray
+        
+        let space = seq { 10 .. 1000000 } 
+                    |> Seq.choose (fun n -> if bigint n = Shared.Numbers.AddDigits n (fun n -> factorials.[n]) then Some(n) else None)
+                    |> Seq.toArray
+        space |> Array.sum
+
+    /// The decimal number, 585 = 1001001001 (binary), is palindromic in both bases.
     /// Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.
     /// (Please note that the palindromic number, in either base, may not include leading zeros.)
-    let Problem33() =
+    let Problem36() =
         let palindromes = seq { 1 .. 1000000 } 
                           |> Seq.where (fun n -> Shared.Palindromes.TestInt32 n && Shared.Palindromes.TestBase2 n)
                           |> Seq.toArray
@@ -393,3 +404,14 @@ module ProjectEuler =
         let s = result.ToString()
         s.Substring(s.Length - 10, 10)
         
+    /// The prime 41, can be written as the sum of six consecutive primes:
+    ///     41 = 2 + 3 + 5 + 7 + 11 + 13
+    /// This is the longest sum of consecutive primes that adds to a prime below one-hundred.
+    /// The longest sum of consecutive primes below one-thousand that adds to a prime, contains 21 terms, and is equal to 953.
+    ///
+    /// Which prime, below one-million, can be written as the sum of the most consecutive primes?
+    let Problem50() =
+        let primes = Shared.Primes.Sieve 1000000 |> Seq.toArray
+        let primeSet = primes |> Set.ofArray
+        // TODO
+        0
