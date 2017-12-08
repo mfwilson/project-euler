@@ -4,6 +4,7 @@ open System
 open System.IO
 
 module ProjectEuler =
+    open System.Numerics
 
     let Problem1() =
         Seq.init 1000 (fun n -> n)
@@ -440,3 +441,108 @@ module ProjectEuler =
         let primeSet = primes |> Set.ofArray
         // TODO
         0
+
+    /// If we take 47, reverse and add, 47 + 74 = 121, which is palindromic.
+    /// Not all numbers produce palindromes so quickly. For example,
+    /// 
+    /// 349 + 943 = 1292,
+    /// 1292 + 2921 = 4213
+    /// 4213 + 3124 = 7337
+    ///
+    /// That is, 349 took three iterations to arrive at a palindrome.
+    ///
+    /// Although no one has proved it yet, it is thought that some numbers, like 196, never produce a palindrome. A number that 
+    /// never forms a palindrome through the reverse and add process is called a Lychrel number. Due to the theoretical nature of 
+    /// these numbers, and for the purpose of this problem, we shall assume that a number is Lychrel until proven otherwise. In addition 
+    /// you are given that for every number below ten-thousand, it will either (i) become a palindrome in less than fifty iterations, or, 
+    /// (ii) no one, with all the computing power that exists, has managed so far to map it to a palindrome. In fact, 10677 is the first 
+    /// number to be shown to require over fifty iterations before producing a palindrome: 4668731596684224866951378664 (53 iterations, 28-digits).
+    ///
+    /// Surprisingly, there are palindromic numbers that are themselves Lychrel numbers; the first example is 4994.
+    /// 
+    /// How many Lychrel numbers are there below ten-thousand?
+    /// 
+    /// NOTE: Wording was modified slightly on 24 April 2007 to emphasise the theoretical nature of Lychrel numbers.
+    let Problem55() =
+        let sumAndReverse n = n + BigInteger.Parse(new String(n.ToString().ToCharArray() |> Array.rev))
+                    
+        let rec isLychrel n retry =
+            if retry <= 0 then 
+                false
+            else
+                let value = sumAndReverse n
+                if Shared.Palindromes.TestInt32 value then 
+                    true
+                else
+                    isLychrel value (retry - 1)
+
+        let values = seq { 1I .. 9999I } |> Seq.choose (fun n -> if isLychrel n 50 then None else Some n) |> Seq.toArray
+        values |> Seq.length
+
+    /// By replacing each of the letters in the word CARE with 1, 2, 9, and 6 respectively, we form a square number: 1296 = 362. What 
+    /// is remarkable is that, by using the same digital substitutions, the anagram, RACE, also forms a square number: 9216 = 962. We 
+    /// shall call CARE (and RACE) a square anagram word pair and specify further that leading zeroes are not permitted, neither may 
+    /// a different letter have the same digital value as another letter.
+    ///
+    /// Using words.txt (right click and 'Save Link/Target As...'), a 16K text file containing nearly two-thousand common English words, 
+    /// find all the square anagram word pairs (a palindromic word is NOT considered to be an anagram of itself).
+    /// 
+    /// What is the largest square number formed by any member of such a pair?
+    let Problem98() =
+        let allWords = File.ReadAllText(@"Data\p098_words.txt").Split([| ','|])
+                       |> Array.map (fun (n : String) -> n.Replace("\"", ""))
+
+        let sortedWords = allWords 
+                          |> Array.map (fun w -> Array.sort (w.ToCharArray()))
+                          |> Array.mapi (fun i c -> new String(c), i)
+                          |> Array.sortBy (fun w -> fst(w))
+
+        let anagrams = sortedWords 
+                       |> Array.pairwise 
+                       |> Array.where (fun (a, b) -> fst(a) = fst(b))
+                       |> Array.map (fun (a, b) -> allWords.[snd(a)], allWords.[snd(b)])
+                       |> Array.sortByDescending (fun (a, b) -> a.Length)
+
+        let min = anagrams |> Array.minBy (fun (a, b) -> Seq.length a) 
+        let max = anagrams |> Array.maxBy (fun (a, b) -> Seq.length a) 
+        let minLength = fst(min).Length
+        let maxLength = fst(max).Length
+
+        let squaresMap = Seq.init 100000 (fun n -> int64 n * int64 n) 
+                         |> Seq.where (fun n -> let len = n.ToString().Length
+                                                len >= minLength && len <= maxLength) 
+                         |> Seq.groupBy (fun n -> n.ToString().Length)
+                         |> Seq.map (fun (len, coll) -> len, coll |> Seq.map (fun s -> s.ToString()) |> Set.ofSeq)
+                         |> Map.ofSeq
+
+        let matchSquare (a : char[], b : char[]) =
+            let squares = squaresMap.[a.Length]
+
+            let pick (square : String) =
+                let map = Array.zip a (square.ToCharArray()) |> Map.ofArray
+                let reverseMap = Array.zip (square.ToCharArray()) a |> Map.ofArray
+                if map.Count <> reverseMap.Count then
+                    None
+                else
+                    let lookup = new String(b |> Array.map (fun c -> map.[c]))
+                    if squares.Contains(lookup) then Some([| square; lookup |]) else None
+                    
+            let results = squares |> Seq.choose (fun s -> pick s) |> Seq.concat |> Seq.map (fun s -> Int64.Parse s) 
+            if Seq.length results = 0 then None else Some(results |> Seq.max)
+
+        let result = anagrams |> Array.tryPick (fun (a, b) -> matchSquare(a.ToCharArray(), b.ToCharArray()))
+        result.Value
+
+    let Problem99() =
+        
+        let allPairs = File.ReadAllText(@"Data\p099_base_exp.txt").Split([| '\n' |])
+                       |> Array.map (fun (pair : String) -> pair.Split([| ',' |]))
+                       |> Array.map (fun (pair : string []) -> (bigint.Parse(pair.[0]), Int32.Parse(pair.[1])))
+        
+        let results = allPairs |> Array.map (fun n -> fst(n), snd(n), Shared.Numbers.Factors (snd n) |> Seq.toArray)
+
+
+//        let results = allPairs |> Array.map (fun n -> Math.Pow(fst(n) / 10000.0, snd(n) / 1000.0))
+  //      let max = results |> Array.max
+  //      (results |> Array.findIndex (fun n -> n = max)) + 1
+        0    
