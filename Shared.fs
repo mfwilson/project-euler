@@ -249,6 +249,35 @@ module Shared =
             | Direction.West      -> fun x y -> x, y - 1
             | Direction.NorthWest -> fun x y -> x - 1, y - 1        
 
+        let createSpiral N M =
+            let matrix = Array2D.zeroCreate<int> N M
+
+            let changeDirection direction = 
+                match direction with
+                | Direction.North -> Direction.West
+                | Direction.East  -> Direction.North
+                | Direction.South -> Direction.East
+                | Direction.West  -> Direction.South
+
+            let rec getNextPoint (x, y, direction) =
+                let x', y' = getTransformation direction x y
+                if x' < N && x' >= 0 && y' >= 0 && y' < M && matrix.[x', y'] = 0 then 
+                    x', y', direction
+                else
+                    let newDirection = changeDirection direction
+                    getNextPoint(x, y, newDirection)
+                                  
+            let expander (value, x, y, direction) =
+                matrix.[x, y] <- value                
+                let x', y', dir = getNextPoint(x, y, direction)
+                match value - 1 with                               
+                | 1 -> matrix.[x', y'] <- 1; None
+                | _ -> Some(value, (value - 1, x', y', dir))
+
+            Seq.unfold (expander) (N * M, 0, M - 1, Direction.West) |> Seq.toArray |> ignore
+            matrix
+
+
         let getValues (values : int[,]) (direction : Direction) x y count =
             let xDim = Array2D.length1 values
             let yDim = Array2D.length1 values
