@@ -53,6 +53,8 @@ module Shared =
         let Factorial n = 
             [ 2 .. n ] |> List.fold (fun total i -> bigint i * total) 1I
 
+        let inline (!!) (n: int) = Factorial n
+
         let SumDigits n = 
             n.ToString().ToCharArray() 
             |> Array.map ( fun c -> (int c - 48) )

@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open Shared.Numbers
 
 module ProjectEuler =
     open System.Numerics
@@ -259,8 +260,8 @@ module ProjectEuler =
         // central binomial coefficients
         // (2n)! / n!^2
         let centralBinomialCoefficient n =
-            let denominator = Shared.Numbers.Factorial n
-            (Shared.Numbers.Factorial (2 * n)) / (denominator * denominator)            
+            let denominator = !!n
+            (!!(2 * n)) / (denominator * denominator)            
         centralBinomialCoefficient 20
 
     /// What is the sum of the digits of the number 2^1000?
