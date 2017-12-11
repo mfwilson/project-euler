@@ -253,6 +253,16 @@ module ProjectEuler =
                        53503534226472524250874054075591789781264330331690I; ] |> List.sum
         result.ToString().Substring(0, 10)
 
+    /// Starting in the top left corner of a 2×2 grid, and only being able to move to the right and down, there are exactly 6 routes to the bottom right corner.
+    /// How many such routes are there through a 20×20 grid?
+    let Problem15() =
+        // central binomial coefficients
+        // (2n)! / n!^2
+        let centralBinomialCoefficient n =
+            let denominator = Shared.Numbers.Factorial n
+            (Shared.Numbers.Factorial (2 * n)) / (denominator * denominator)            
+        centralBinomialCoefficient 20
+
     /// What is the sum of the digits of the number 2^1000?
     let Problem16() =        
         let n = Shared.Numbers.Power 2 1000        
