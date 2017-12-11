@@ -500,6 +500,26 @@ module ProjectEuler =
         let values = seq { 1I .. 9999I } |> Seq.choose (fun n -> if isLychrel n 50 then None else Some n) |> Seq.toArray
         values |> Seq.length
 
+    /// A number chain is created by continuously adding the square of the digits in a number to form a new number until it has been seen before.
+    /// 
+    /// For example,
+    /// 
+    ///     44 → 32 → 13 → 10 → 1 → 1
+    ///     85 → 89 → 145 → 42 → 20 → 4 → 16 → 37 → 58 → 89
+    /// 
+    /// Therefore any chain that arrives at 1 or 89 will become stuck in an endless loop. What is most amazing is that EVERY starting number will eventually arrive at 1 or 89.
+    /// 
+    /// How many starting numbers below ten million will arrive at 89?
+    let Problem92() =
+        let rec findNumberChain n =
+            let result = Shared.Numbers.SquareDigits n
+            match n with
+            | 1 -> None
+            | 89 -> Some(1)
+            | _ -> findNumberChain result
+        let result = seq { 2 .. 10000000 } |> Seq.choose (fun n -> findNumberChain n) |> Seq.sum
+        result
+
     /// By replacing each of the letters in the word CARE with 1, 2, 9, and 6 respectively, we form a square number: 1296 = 362. What 
     /// is remarkable is that, by using the same digital substitutions, the anagram, RACE, also forms a square number: 9216 = 962. We 
     /// shall call CARE (and RACE) a square anagram word pair and specify further that leading zeroes are not permitted, neither may 

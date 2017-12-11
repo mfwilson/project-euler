@@ -7,7 +7,6 @@ open System.Text
 open Microsoft.FSharp.Collections
 
 module Shared =
-    open System.Globalization
 
     type Direction = 
         | North
@@ -56,10 +55,13 @@ module Shared =
 
         let SumDigits n = 
             n.ToString().ToCharArray() 
-            |> Array.toSeq 
-            |> Seq.map ( fun c -> Int32.Parse(c.ToString()) )
-            |> Seq.toList
-            |> Seq.sum
+            |> Array.map ( fun c -> (int c - 48) )
+            |> Array.sum
+
+        let SquareDigits n =
+            n.ToString().ToCharArray() 
+            |> Array.map (fun c -> (int c - 48) * (int c - 48))
+            |> Array.sum
 
         let AddDigits n (convert : int -> BigInteger) = 
             n.ToString().ToCharArray() 
