@@ -2,7 +2,11 @@
 
 open System
 open System.IO
+
+open Shared
+open Shared.Matrix
 open Shared.Numbers
+open Shared.Primes
 
 module ProjectEuler =
     open System.Numerics
@@ -266,7 +270,7 @@ module ProjectEuler =
 
     /// What is the sum of the digits of the number 2^1000?
     let Problem16() =        
-        let n = Shared.Numbers.Power 2 1000        
+        let n = 2 ^ 1000        
         Shared.Numbers.SumDigits n               
 
     /// If the numbers 1 to 5 are written out in words: one, two, three, four, five, then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
@@ -393,10 +397,10 @@ module ProjectEuler =
     /// What is the sum of the numbers on the diagonals in a 1001 by 1001 spiral formed in the same way?
     let Problem28() =
         let n = 1001
-        let matrix = Shared.Matrix.createSpiral n n 
+        let matrix = createSpiral n n spiralClockwise
         
-        let diagonal1 = Shared.Matrix.getValues matrix (Shared.Direction.SouthEast) 0 0 n
-        let diagonal2 = Shared.Matrix.getValues matrix (Shared.Direction.NorthEast) (n - 1) 0 n
+        let diagonal1 = getValues matrix (Shared.Direction.SouthEast) 0 0 n
+        let diagonal2 = getValues matrix (Shared.Direction.NorthEast) (n - 1) 0 n
 
         let result = (diagonal1.Value |> Seq.sum) + (diagonal2.Value |> Seq.sum) - 1
         result
@@ -511,6 +515,58 @@ module ProjectEuler =
         let values = seq { 1I .. 9999I } |> Seq.choose (fun n -> if isLychrel n 50 then None else Some n) |> Seq.toArray
         values |> Seq.length
 
+    /// Starting with 1 and spiralling anticlockwise in the following way, a square spiral with side length 7 is formed.
+    /// 
+    ///     37 36 35 34 33 32 31
+    ///     38 17 16 15 14 13 30
+    ///     39 18  5  4  3 12 29
+    ///     40 19  6  1  2 11 28
+    ///     41 20  7  8  9 10 27
+    ///     42 21 22 23 24 25 26
+    ///     43 44 45 46 47 48 49
+    /// 
+    /// It is interesting to note that the odd squares lie along the bottom right diagonal, but what is more interesting is that
+    /// 8 out of the 13 numbers lying along both diagonals are prime; that is, a ratio of 8/13 ≈ 62%.
+    /// 
+    /// If one complete new layer is wrapped around the spiral above, a square spiral with side length 9 will be formed. If this 
+    /// process is continued, what is the side length of the square spiral for which the ratio of primes along both diagonals first falls below 10%?
+    let Problem58() =
+        let max = 800000000 
+        let primeSet = Sieve max |> Set.ofSeq
+
+        let getCorners n =
+            if n = 1L then 
+                [| 1L |]
+            else
+                let lastValue = (n - 2L) * (n - 2L)
+                let index = n - 1L            
+                [| lastValue + index; 
+                   lastValue + 2L * index; 
+                   lastValue + 3L * index; 
+                   lastValue + 4L * index |]
+
+        let isPrime n = primeSet.Contains (int32 n) || if n = 1L then false else IsPrime n 
+
+        let getRatio n = 
+            let corners = getCorners n 
+            let primes = corners |> Seq.filter isPrime |> Seq.length
+            int64 primes, int64 corners.Length
+        
+        let folder sum n =
+            let value = getRatio n
+            let primes = fst(sum) + fst(value)
+            let total = snd(sum) + snd(value)
+            let ratio = ((float primes / float total) * 100.0)
+            if ratio < 10.0 then printfn "%A -- %A / %A = %A" n primes total ratio
+            //printfn "%A -- %A / %A = %A" n primes total ratio
+            primes, total
+
+        let result = seq { 7L .. 2L .. 1000001L } 
+                     |> Seq.scan (folder) (5L, 9L) 
+                     |> Seq.tryFindIndex (fun (p, t) -> ((float p / float t) * 100.0) < 10.0)
+
+        seq { 7L .. 2L .. 1000001L } |> Seq.skip (result.Value - 1) |> Seq.take 1
+        
     /// A number chain is created by continuously adding the square of the digits in a number to form a new number until it has been seen before.
     /// 
     /// For example,

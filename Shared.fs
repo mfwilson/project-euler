@@ -50,6 +50,8 @@ module Shared =
         let Power x y =
             Seq.init y (fun i -> int x) |> Seq.fold (fun total i -> total * bigint i) 1I
 
+        let inline (^) (x : int) (y : int) = Power x y
+
         let Factorial n = 
             [ 2 .. n ] |> List.fold (fun total i -> bigint i * total) 1I
 
@@ -253,15 +255,30 @@ module Shared =
             | Direction.West      -> fun x y -> x, y - 1
             | Direction.NorthWest -> fun x y -> x - 1, y - 1        
 
-        let createSpiral N M =
+        let spiralClockwise direction = 
+            match direction with
+            | Direction.North -> Direction.West
+            | Direction.East  -> Direction.North
+            | Direction.South -> Direction.East
+            | Direction.West  -> Direction.South
+
+        let spiralCounterClockwise direction = 
+            match direction with
+            | Direction.North -> Direction.East
+            | Direction.East  -> Direction.South
+            | Direction.South -> Direction.West
+            | Direction.West  -> Direction.North
+
+        let createSpiralWithStart N M start direction (changeDirection : Direction -> Direction) =
             let matrix = Array2D.zeroCreate<int> N M
 
-            let changeDirection direction = 
-                match direction with
-                | Direction.North -> Direction.West
-                | Direction.East  -> Direction.North
-                | Direction.South -> Direction.East
-                | Direction.West  -> Direction.South
+            let startX, startY = 
+                match start with
+                | Direction.NorthEast -> 0, M - 1
+                | Direction.SouthEast -> N - 1, M - 1
+                | Direction.SouthWest -> N - 1, 0
+                | Direction.NorthWest -> 0, 0        
+                | _ -> raise(Exception("Start in a corner"))
 
             let rec getNextPoint (x, y, direction) =
                 let x', y' = getTransformation direction x y
@@ -278,9 +295,11 @@ module Shared =
                 | 1 -> matrix.[x', y'] <- 1; None
                 | _ -> Some(value, (value - 1, x', y', dir))
 
-            Seq.unfold (expander) (N * M, 0, M - 1, Direction.West) |> Seq.toArray |> ignore
+            Seq.unfold (expander) (N * M, startX, startY, direction) |> Seq.toArray |> ignore
             matrix
 
+        let createSpiral N M (changeDirection : Direction -> Direction) =
+            createSpiralWithStart N M Direction.NorthEast Direction.West changeDirection
 
         let getValues (values : int[,]) (direction : Direction) x y count =
             let xDim = Array2D.length1 values
