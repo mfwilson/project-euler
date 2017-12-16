@@ -271,7 +271,7 @@ module ProjectEuler =
     /// What is the sum of the digits of the number 2^1000?
     let Problem16() =        
         let n = 2 ^ 1000        
-        Shared.Numbers.SumDigits n               
+        SumDigits n               
 
     /// If the numbers 1 to 5 are written out in words: one, two, three, four, five, then there are 3 + 3 + 5 + 4 + 4 = 19 letters used in total.
     ///
@@ -425,6 +425,28 @@ module ProjectEuler =
                     |> Seq.choose (fun n -> if bigint n = Shared.Numbers.AddDigits n (fun n -> factorials.[n]) then Some(n) else None)
                     |> Seq.toArray
         space |> Array.sum
+
+    /// The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719, are themselves prime.
+    /// There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
+    /// How many circular primes are there below one million?
+    let Problem35() =
+        let primes = Sieve 1000000 |> Seq.toArray
+        let primeSet = primes |> Set.ofArray
+
+        let rotateDigits n =
+            let rotations = (CountDigits n) - 1
+            let power = int32 (10 ^ rotations)            
+            let rec permute x count =
+                let result = (x / 10) + (x % 10) * power 
+                if count <= 0 then [ result ] else result :: permute result (count - 1) 
+            permute n rotations
+
+        let isCircularPrime n =
+            let values = rotateDigits n
+            values |> List.filter (fun i -> primeSet.Contains i) |> List.length = values.Length
+
+        let circularPrimes = primes |> Array.choose (fun i -> if isCircularPrime i then Some i else None)
+        circularPrimes.Length
 
     /// The decimal number, 585 = 1001001001 (binary), is palindromic in both bases.
     /// Find the sum of all numbers, less than one million, which are palindromic in base 10 and base 2.

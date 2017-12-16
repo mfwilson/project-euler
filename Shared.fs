@@ -56,6 +56,9 @@ module Shared =
             [ 2 .. n ] |> List.fold (fun total i -> bigint i * total) 1I
 
         let inline (!!) (n: int) = Factorial n
+       
+        let rec CountDigits n =
+            if n = 0 then 0 else 1 + CountDigits (n / 10)
 
         let SumDigits n = 
             n.ToString().ToCharArray() 
