@@ -482,6 +482,46 @@ module ProjectEuler =
         let result = seq { 0 .. length } |> Seq.pick (fun n -> seek n (n+1)) 
         result
 
+    // It was proposed by Christian Goldbach that every odd composite number can be written as the sum of a prime and twice a square.
+    // 
+    // 9 = 7 + 2×1^2
+    // 15 = 7 + 2×2^2
+    // 21 = 3 + 2×3^2
+    // 25 = 7 + 2×3^2
+    // 27 = 19 + 2×2^2
+    // 33 = 31 + 2×1^2
+    // 
+    // It turns out that the conjecture was false.
+    // 
+    // What is the smallest odd composite that cannot be written as the sum of a prime and twice a square?
+    let Problem46() =
+        let primes = Sieve 100000 |> Seq.map (fun i -> int64 i) |> Seq.toArray
+        let primeSet = primes |> Set.ofArray
+        
+        let offsets = Seq.init 10000 (fun i -> 2L * (int64 i) * (int64 i)) |> Set.ofSeq
+
+        let oddComposites = seq { 1L .. 10000L } 
+                            |> Seq.where (fun i -> i % 2L = 1L && not(primeSet.Contains i)) 
+                            |> Seq.toArray
+                            
+        let getFactors n index =
+            let indexes = seq { index .. -1 .. 0 }
+            let getFactor i =
+                let prime = primes.[i]
+                let diff = n - prime
+                if offsets.Contains diff then Some(prime, i, diff) else None
+            indexes |> Seq.tryPick getFactor 
+            
+        let findValues n =
+            let index = primes |> Array.tryFindIndexBack (fun i -> i < n)
+            if index.IsNone then    
+                None
+            else
+                let factors = getFactors n index.Value
+                if factors.IsSome then None else Some n
+
+        oddComposites |> Array.tryPick findValues
+
     /// Find the last ten digits of the series, 1^1 + 2^2 + 3^3 + ... + 1000^1000.
     let Problem48() =        
         let result = seq { 1 .. 1000 } |> Seq.map (fun i -> Shared.Numbers.Power i i) |> Seq.sum
