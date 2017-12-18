@@ -84,6 +84,21 @@ module Shared =
 
         let IsAbundant n = ProperDivisors n |> Seq.sum > n
 
+        let IsPandigital (ns : String) =
+            let value = ns.ToCharArray()
+            Array.sortInPlace value
+            match value.Length with
+            | 9 -> String(value) = "123456789"
+            | 8 -> String(value) = "12345678"
+            | 7 -> String(value) = "1234567"
+            | 6 -> String(value) = "123456"
+            | 5 -> String(value) = "12345"
+            | 4 -> String(value) = "1234"
+            | 3 -> String(value) = "123"
+            | 2 -> String(value) = "12"
+            | 1 -> String(value) = "1"
+            | _ -> false
+
         let ToEnglish (n : int) =
             let smallNumbers = [| "Zero"; "One"; "Two"; "Three"; "Four"; "Five"; "Six"; "Seven"; "Eight"; "Nine"; "Ten"; "Eleven"; "Twelve"; "Thirteen"; "Fourteen"; "Fifteen"; "Sixteen"; "Seventeen"; "Eighteen"; "Nineteen" |]
             let tensNumbers = [| ""; ""; "Twenty"; "Thirty"; "Forty"; "Fifty"; "Sixty"; "Seventy"; "Eighty"; "Ninety" |]                        
