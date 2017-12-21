@@ -156,6 +156,55 @@ module Shared =
                     combined.Insert(0, prefix) |> ignore
             combined.ToString()
 
+    module Roman =
+        
+        /// In order for a number written in Roman numerals to be considered valid there are three basic rules which must be followed.
+        /// 
+        /// 1. Numerals must be arranged in descending order of size.
+        /// 2. M, C, and X cannot be equalled or exceeded by smaller denominations.
+        /// 3. D, L, and V can each only appear once.
+        ///
+        /// In addition to the three rules given above, if subtractive combinations are used then the following four rules must be followed.
+        /// 
+        /// 1. Only one I, X, and C can be used as the leading numeral in part of a subtractive pair.
+        /// 2. I can only be placed before V and X.
+        /// 3. X can only be placed before L and C.
+        /// 4. C can only be placed before D and M.
+
+        let private Convert c =
+            match c with
+            | 'I' -> 1
+            | 'V' -> 5
+            | 'X' -> 10
+            | 'L' -> 50
+            | 'C' -> 100
+            | 'D' -> 500
+            | 'M' -> 1000
+            | _ -> 0
+
+        let ToInt32 (ns : String) =
+            let numerals = ns.ToCharArray()
+
+            let lookback index value =
+                let previous = Convert numerals.[index - 1]
+                if previous >= value then value else value - 2 * previous 
+
+            let convertIndex index c =
+                let value = Convert c
+                if index = 0 then value else lookback index value
+ 
+            numerals |> Seq.mapi convertIndex |> Seq.sum
+        
+        let FromInt32 n =            
+            let numerals = [ (1000, "M"); (900, "CM"); (500, "D"); (400, "CD"); (100, "C"); (90, "XC"); (50, "L"); 
+                             (40, "XL"); (10, "X"); (9, "IX"); (5, "V"); (4, "IV"); (1, "I")]
+            let rec build value =
+                if value <= 0 then
+                    ""
+                else
+                    let v, x = numerals |> List.find (fun (v, x) -> v <= value) 
+                    x + build (value - v)            
+            build n
 
     module Process =
 
