@@ -2,6 +2,7 @@
 
 open System
 open System.IO
+open System.Numerics
 
 open Shared
 open Shared.Matrix
@@ -9,7 +10,6 @@ open Shared.Numbers
 open Shared.Primes
 
 module ProjectEuler =
-    open System.Numerics
 
     let Problem1() =
         Seq.init 1000 (fun n -> n)
@@ -650,6 +650,16 @@ module ProjectEuler =
 
         seq { 7L .. 2L .. 1000001L } |> Seq.skip (result.Value - 1) |> Seq.take 1
         
+    let Problem80() =
+        
+        let values = [|2 .. 100|] |> Array.map (fun i -> sqrt(float i))
+        
+        let bd = BigDecimal(2I, 2, 100)
+        
+        //Math.Sqrt(
+        
+        0L
+
     /// For a number written in Roman numerals to be considered valid there are basic rules which must be followed. Even though the rules 
     /// allow some numbers to be expressed in more than one way there is always a "best" way of writing a particular number.
     /// 

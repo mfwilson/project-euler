@@ -233,6 +233,12 @@ module Shared =
 
             0
             
+    module SquareRoot =
+        
+        let f =
+            
+            0
+
     module Fibonacci =
 
         let Generate =
